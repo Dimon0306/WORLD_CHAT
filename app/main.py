@@ -63,20 +63,6 @@ async def startup():
 async def shutdown():
     await app.state.db.close()
 
-class UserRegister(BaseModel):
-    username: str
-    email: str
-
-@app.post("/register")
-async def register(user: UserRegister):
-    try:
-        await app.state.db.execute(
-            "INSERT INTO users (username, email) VALUES ($1, $2)",
-            user.username, user.email
-        )
-        return {"status": "success", "message": "User registered"}
-    except asyncpg.UniqueViolationError:
-        raise HTTPException(status_code=400, detail="User already exists")
 
 # база
 # добавления файла
@@ -171,5 +157,6 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
 
