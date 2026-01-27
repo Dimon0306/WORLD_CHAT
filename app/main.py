@@ -48,6 +48,12 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"Вы написали: {data}")
+
+@app.get("/api/check-username")
+def check_username(username: str = Query(...), db: Session = Depends(get_db)):
+    exists = db.query(User).filter(User.username == username).first() is not None
+    return {"available": not exists}
+    
 # база
 @app.on_event("startup")
 async def startup():
@@ -165,3 +171,4 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
