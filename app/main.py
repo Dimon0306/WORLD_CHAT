@@ -1,4 +1,5 @@
 # app/main.py
+import asyncpg
 from fastapi import FastAPI, WebSocket, Request, Depends, HTTPException, status, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -7,6 +8,7 @@ from sqlalchemy.orm import Session
 from urllib.parse import parse_qs
 from jose import jwt, JWTError
 from datetime import timedelta
+from pydantic import BaseModel
 from pathlib import Path
 from app.auth import create_access_token
 import uuid
@@ -21,6 +23,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
     
 templates = Jinja2Templates(directory="app/templates")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Хранилище активных соединений: {websocket: user}
 active_connections = []
@@ -44,8 +48,31 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"Вы написали: {data}")
+# база
+@app.on_event("startup")
+async def startup():
+    app.state.db = await asyncpg.create_pool(DATABASE_URL)
 
+@app.on_event("shutdown")
+async def shutdown():
+    await app.state.db.close()
 
+class UserRegister(BaseModel):
+    username: str
+    email: str
+
+@app.post("/register")
+async def register(user: UserRegister):
+    try:
+        await app.state.db.execute(
+            "INSERT INTO users (username, email) VALUES ($1, $2)",
+            user.username, user.email
+        )
+        return {"status": "success", "message": "User registered"}
+    except asyncpg.UniqueViolationError:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+# база
 # добавления файла
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -136,4 +163,5 @@ async def websocket_endpoint(websocket: WebSocket):
             for conn in disconnected:
                 active_connections.remove(conn)
     except:
+
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
