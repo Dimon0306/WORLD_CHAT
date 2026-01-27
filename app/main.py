@@ -1,6 +1,6 @@
 # app/main.py
 import asyncpg
-from fastapi import FastAPI, WebSocket, Request, Depends, HTTPException, status, File, UploadFile
+from fastapi import FastAPI, WebSocket, Request, Depends, HTTPException, status, File, UploadFile, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
@@ -171,4 +171,5 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
