@@ -42,12 +42,6 @@ async def get_chat_page(request: Request):
 def get_messages():
     return messages
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Вы написали: {data}")
 
 @app.get("/api/check-username")
 def check_username(username: str = Query(...), db: Session = Depends(get_db)):
@@ -157,6 +151,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
 
 
