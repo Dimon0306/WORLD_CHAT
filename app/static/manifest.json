@@ -10,8 +10,9 @@
   "icons": [
     {
       "src": "/static/icons/Снимок.png",
-      "sizes": "740x740",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
+
 }
