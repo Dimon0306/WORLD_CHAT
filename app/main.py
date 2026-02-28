@@ -27,7 +27,10 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="Chat App")
 
 # Шаблоны и статика
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parent.parent  # /opt/render/project/src/
+TEMPLATES_DIR = BASE_DIR / "templates"
+
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Директория для загрузок
