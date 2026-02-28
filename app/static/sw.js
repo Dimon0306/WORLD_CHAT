@@ -1,7 +1,7 @@
 const CACHE_NAME = 'tictactoe-v1';
 const ASSETS = [
     '/',
-    '/static/icons/Снимок.png',
+    '/static/icons/qwe.png',
     // Добавьте сюда пути к вашим CSS файлам, если они отдельные
     // '/static/css/style.css' 
 ];
@@ -27,4 +27,5 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(
         caches.match(e.request).then((response) => response || fetch(e.request))
     );
+
 });
