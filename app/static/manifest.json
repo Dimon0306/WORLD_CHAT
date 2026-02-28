@@ -1,18 +1,25 @@
 {
-  "name": "Крестики-Нолики Pro",
-  "short_name": "Крестики-Нолики",
-  "description": "Играй в крестики-нолики с умным ботом или другом!",
+  "name": "Мой Чат",
+  "short_name": "Чат",
+  "description": "Чат-приложение с WebSocket",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2c3e50",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/static/icons/Снимок.png",
+      "src": "/static/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
-
 }
+
