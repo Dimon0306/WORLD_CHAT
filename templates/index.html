@@ -5,6 +5,66 @@
     <title>Secure Chat</title>
       <!-- начало название комнаты-->
     <title>Chat Room</title>
+
+    <!-- 🔹 PWA: Мета-теги -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Secure Chat">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Безопасный чат с шифрованием">
+
+<!-- 🔹 PWA: Манифест -->
+<link rel="manifest" href="{{ url_for('static', path='/manifest.json') }}">
+
+<!-- 🔹 PWA: Иконки -->
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='/icons/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='/icons/favicon-16x16.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='/icons/apple-touch-icon.png') }}">
+
+<!-- 🔹 PWA: Стили для установки -->
+<style>
+    /* Кнопка установки PWA */
+    #pwa-install {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+    #pwa-install button {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        margin-left: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    #pwa-install.show {
+        display: flex;
+        align-items: center;
+        animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    /* Скрытие при установке */
+    @media (display-mode: standalone) {
+        #pwa-install { display: none !important; }
+    }
+</style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
         body { font-family: Arial; max-width: 1000px; margin: 0 auto; padding: 60px; }
@@ -319,5 +379,63 @@
             if (e.key === 'Enter') sendMessage();
         });
     </script>
+<!-- 🔹 PWA: Кнопка установки -->
+<div id="pwa-install">
+    <span>📱 Установить Secure Chat?</span>
+    <button id="pwa-install-btn">Установить</button>
+    <button id="pwa-dismiss-btn" style="background:transparent;color:white;margin-left:5px;">✕</button>
+</div>
+
+<!-- 🔹 PWA: Скрипт регистрации Service Worker -->
+<script>
+    // Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(reg => console.log('✅ SW registered:', reg.scope))
+                .catch(err => console.error('❌ SW error:', err));
+        });
+    }
+
+    // Обработка установки PWA
+    let deferredPrompt;
+    const installBanner = document.getElementById('pwa-install');
+    const installBtn = document.getElementById('pwa-install-btn');
+    const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.classList.add('show');
+        console.log('📲 PWA install prompt available');
+    });
+
+    installBtn?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`📲 User choice: ${outcome}`);
+            deferredPrompt = null;
+            installBanner.classList.remove('show');
+        }
+    });
+
+    dismissBtn?.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ PWA installed!');
+        installBanner.classList.remove('show');
+    });
+
+    // Запрос на уведомления после первого клика
+    document.addEventListener('click', async () => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            await Notification.requestPermission();
+        }
+    }, { once: true });
+</script>
 </body>
+
 </html>
