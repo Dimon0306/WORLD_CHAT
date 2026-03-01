@@ -39,7 +39,7 @@ for possible_path in [
 if not STATIC_DIR:
     STATIC_DIR = BASE_DIR / "static"  # Fallback
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Хранилище активных соединений: {websocket: user}
@@ -167,6 +167,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
 
 
