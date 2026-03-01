@@ -151,31 +151,39 @@ async def websocket_endpoint(websocket: WebSocket):
 
     await websocket.accept()
     active_connections.append({"websocket": websocket, "user": user})
+    logger.info(f"✅ Подключился: {user.username}")
 
     try:
         while True:
             data = await websocket.receive_text()
             message_text = f"{user.username}: {data}"
             
-            # 🔥 Сохраняем в общий список для polling
+            # 🔥 Сохраняем в общий список
             messages.append({
                 "user": user.username,
                 "content": data,
-                "type": "text"
+                "type": "text",
+                "timestamp": None
             })
             
-            # Рассылаем всем подключённым
+            # Рассылаем всем
             disconnected = []
             for conn in active_connections:
                 try:
                     await conn["websocket"].send_text(message_text)
-                except:
+                except Exception as e:
+                    logger.error(f"❌ Ошибка отправки {conn['user'].username}: {e}")
                     disconnected.append(conn)
+            
             for conn in disconnected:
-                active_connections.remove(conn)
-            except:
-
+                if conn in active_connections:
+                    active_connections.remove(conn)
+                    
+    except Exception as e:
+        logger.info(f"🔌 {user.username} отключился: {e}")
+    finally:
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
 
 
