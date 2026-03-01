@@ -3,282 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <title>Secure Chat</title>
-      <!-- начало название комнаты-->
-    <title>Chat Room</title>
 
     <!-- 🔹 PWA: Мета-теги -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Secure Chat">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Безопасный чат с шифрованием">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Secure Chat">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Безопасный чат с шифрованием">
 
-<!-- 🔹 PWA: Манифест -->
-<link rel="manifest" href="{{ url_for('static', path='/manifest.json') }}">
+    <!-- 🔹 PWA: Манифест и иконки -->
+    <link rel="manifest" href="{{ url_for('static', path='/manifest.json') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='/icons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='/icons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='/icons/apple-touch-icon.png') }}">
 
-<!-- 🔹 PWA: Иконки -->
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='/icons/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='/icons/favicon-16x16.png') }}">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='/icons/apple-touch-icon.png') }}">
-
-<!-- 🔹 PWA: Стили для установки -->
-<style>
-    /* Кнопка установки PWA */
-    #pwa-install {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        z-index: 9999;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-    }
-    #pwa-install button {
-        background: white;
-        color: #667eea;
-        border: none;
-        padding: 6px 16px;
-        border-radius: 20px;
-        margin-left: 10px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    #pwa-install.show {
-        display: flex;
-        align-items: center;
-        animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp {
-        from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-        to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
-    /* Скрытие при установке */
-    @media (display-mode: standalone) {
-        #pwa-install { display: none !important; }
-    }
-</style>
+    <!-- 🔹 Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+
+    <!-- 🔹 СТИЛИ -->
     <style>
-
-        /* === 🌈 РАДУЖНЫЙ ФОН ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (AUTH) === */
-body {
-    /* Нейтральный фон по умолчанию для чата */
-    background: #f5f5f5;
-    font-family: Arial, sans-serif;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
-    transition: background 0.5s ease;
-}
-
-/* Радужный фон только когда показана авторизация */
-body.auth-page {
-    background: linear-gradient(-45deg, 
-        #ff0000, #ff8000, #ffff00, #80ff00, 
-        #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff, #ff0080);
-    background-size: 400% 400%;
-    animation: rainbow-bg 15s ease infinite;
-}
-
-@keyframes rainbow-bg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* === ⚪ НЕЙТРАЛЬНЫЙ ФОН ДЛЯ ЧАТА === */
-#chat {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-}
-
-#messages {
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 15px;
-    height: 300px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-}
-
-/* Стиль для сообщений */
-#messages p {
-    background: #ffffff;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin: 8px 0;
-    border-left: 4px solid #667eea;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    word-wrap: break-word;
-}
-
-/* Поле ввода сообщения */
-#messageInput {
-    width: 70%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    margin-right: 10px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-}
-#messageInput:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-/* Кнопки в чате */
-#chat button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-#chat button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-/* === 🎨 СТИЛИ ДЛЯ ФОРМЫ АВТОРИЗАЦИИ === */
-#auth {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 400px;
-    margin: 40px auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-#auth input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-#auth input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-#auth button {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-#auth button:hover {
-    transform: translateY(-2px);
-}
-
-/* Заголовки форм */
-#auth h2, #auth h3 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* === 📱 АДАПТИВНОСТЬ === */
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    #chat, #auth {
-        padding: 15px;
-        border-radius: 12px;
-    }
-    #messageInput {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    #chat button {
-        width: 100%;
-        margin: 5px 0;
-    }
-}
-
-/* === 🎨 ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ === */
-/* Плавная прокрутка сообщений */
-#messages {
-    scroll-behavior: smooth;
-}
-
-/* Эффект при появлении нового сообщения */
-#messages p {
-    animation: message-slide 0.3s ease;
-}
-@keyframes message-slide {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Индикатор набора сообщения (опционально) */
-.typing-indicator {
-    color: #888;
-    font-style: italic;
-    padding: 10px;
-    font-size: 12px;
-}
-        body { font-family: Arial; max-width: 1000px; margin: 0 auto; padding: 60px; }
-        #auth, #chat { display: none; }
-        .form-group { margin: 10px 0; }
-        input { width: 70%; padding: 8px; margin: 5px 0; }
-        button { padding: 8px 16px; margin: 5px 5px 0 0; }
-        #messages { height: 300px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; }
-
-        .emoji {
-            font-size: 18px;
+        /* === Кнопка установки PWA === */
+        #pwa-install {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 9999;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        #pwa-install button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-left: 10px;
             cursor: pointer;
-            user-select: none;
-            padding: 5px;
-            margin: 2px;
-            border-radius: 6px;
-            display: inline-block;
-                }
-        .emoji:hover {
-            background-color: #e0e0e0;
-                }
+            font-weight: bold;
+        }
+        #pwa-install.show {
+            display: flex;
+            align-items: center;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        @media (display-mode: standalone) {
+            #pwa-install { display: none !important; }
+        }
 
+        /* === 🌈 РАДУЖНЫЙ ФОН ДЛЯ АВТОРИЗАЦИИ === */
+        body {
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+        body.auth-page {
+            background: linear-gradient(-45deg, 
+                #ff0000, #ff8000, #ffff00, #80ff00, 
+                #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff, #ff0080);
+            background-size: 400% 400%;
+            animation: rainbow-bg 15s ease infinite;
+        }
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* === ⚪ НЕЙТРАЛЬНЫЙ ФОН ДЛЯ ЧАТА === */
+        #auth, #chat { display: none; }
+        #chat {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        #messages {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            scroll-behavior: smooth;
+        }
+        #messages p {
+            background: #ffffff;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin: 8px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+            animation: message-slide 0.3s ease;
+        }
+        @keyframes message-slide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === ПОЛЕ ВВОДА СООБЩЕНИЯ === */
+        #messageInput {
+            width: 85%;
+            padding: 16px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            margin-right: 10px;
+            font-size: 16px;
+            line-height: 1.4;
+            min-height: 50px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #messageInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* === КНОПКИ В ЧАТЕ === */
+        #chat button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px 3px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #chat button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* === ФОРМА АВТОРИЗАЦИИ === */
+        #auth {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 40px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        #auth input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        #auth input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        #auth button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #auth button:hover {
+            transform: translateY(-2px);
+        }
+        #auth h2, #auth h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* === ЗАГОЛОВОК CHAT ROOM === */
         .chat-title {
-            font-family: 'Comic Sans MS', 'Poppins', 'Arial', sans-serif; /* другой шрифт */
+            font-family: 'Comic Sans MS', 'Poppins', 'Arial', sans-serif;
             font-size: 2rem;
             font-weight: bold;
             text-align: center;
-            }
-
+            margin-bottom: 30px;
+        }
         .chat-title span {
             display: inline-block;
             background: linear-gradient(45deg, 
@@ -289,87 +218,109 @@ body.auth-page {
             color: transparent;
             background-size: 900% 100%;
             animation: rainbow 10s linear infinite;
-            }
-
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
         @keyframes rainbow {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
-            }
+        }
 
-      
+        /* === СМАЙЛЫ === */
+        .emoji {
+            font-size: 18px;
+            cursor: pointer;
+            user-select: none;
+            padding: 5px;
+            margin: 2px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .emoji:hover {
+            background-color: #e0e0e0;
+        }
+        #emojiPanel {
+            display: none;
+            margin-top: 8px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 4px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        /* === ЗАГРУЗКА ФАЙЛОВ === */
+        .file-upload-section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .file-upload-section input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 768px) {
+            .chat-title { font-size: 1.5rem; }
+            #messageInput {
+                width: 80%;
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+        }
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .chat-title { font-size: 1.25rem; }
+            #chat, #auth { padding: 15px; border-radius: 12px; }
+            #messageInput {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            #chat button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
+        /* === УТИЛИТЫ === */
+        .form-group { margin: 10px 0; }
+        .typing-indicator {
+            color: #888;
+            font-style: italic;
+            padding: 10px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
+    <!-- Заголовок -->
     <h1 class="chat-title">
-    <span>C</span><span>h</span><span>a</span><span>t</span>
-    <span>R</span><span>o</span><span>o</span><span>m</span>
-  </h1>
-</body>
-</html>
-</style>
+        <span>C</span><span>h</span><span>a</span><span>t</span>
+        <span>R</span><span>o</span><span>o</span><span>m</span>
+    </h1>
 
-<script>
-  document.getElementById('uploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
+    <!-- Загрузка файлов -->
+    <div class="file-upload-section">
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="fileInput">📎 Прикрепить файл или фото:</label><br><br>
+            <input type="file" id="fileInput" name="file" 
+                   accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.csv" required>
+            <br><br>
+            <button type="submit">📤 Отправить</button>
+        </form>
+    </div>
 
-    if (!file) {
-      alert('Пожалуйста, выберите файл.');
-      return;
-    }
+    <!-- Сообщения (отдельный блок для истории) -->
+    <div id="chatMessages" style="display:none;"></div>
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch('/upload', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      alert('Файл успешно загружен!');
-      console.log('Ответ сервера:', data);
-      // Очистить форму после отправки
-      document.getElementById('uploadForm').reset();
-    })
-    .catch(error => {
-      alert('Ошибка при загрузке файла.');
-      console.error('Ошибка:', error);
-    });
-  });
-</script>
-
-<div id="chatMessages"></div>
-
-<script>
-  async function loadMessages() {
-    const res = await fetch('/messages');
-    const msgs = await res.json();
-    const container = document.getElementById('chatMessages');
-    container.innerHTML = '';
-
-    msgs.forEach(msg => {
-      const div = document.createElement('div');
-      if (msg.type === 'file') {
-        const url = `/uploads/${msg.content}`;
-        const ext = msg.content.split('.').pop().toLowerCase();
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-          div.innerHTML = `<img src="${url}" style="max-width:200px; max-height:200px;">`;
-        } else {
-          div.innerHTML = `<a href="${url}" target="_blank">📎 ${msg.content}</a>`;
-        }
-      } else {
-        div.textContent = msg.content;
-      }
-      container.appendChild(div);
-    });
-  }
-
-  loadMessages();
-  setInterval(loadMessages, 2000);
-</script>
-<!-- конец название комнаты-->
+    <!-- Авторизация -->
     <div id="auth">
         <h2>Login / Register</h2>
         <div>
@@ -392,15 +343,15 @@ body.auth-page {
         <p id="authMessage" style="color:red;"></p>
     </div>
 
+    <!-- Чат -->
     <div id="chat">
-        <!-- здесь можно писать просто название комнаты-->
         <div id="messages"></div>
         <input type="text" id="messageInput" placeholder="Type a message..." />
         <button onclick="sendMessage()">Send</button>
-        <!-- смайлы-->
         <button onclick="logout()">Logout</button>
-        <button onclick="toggleEmojiPanel()" style="margin-top: 5px; font-size: 18px;">🙂</button>
-        <div id="emojiPanel" style="display:none; margin-top: 8px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px;">
+        <button onclick="toggleEmojiPanel()" style="font-size: 18px;">🙂</button>
+        
+        <div id="emojiPanel">
             <span class="emoji" onclick="insertEmoji('😊')">😊</span>
             <span class="emoji" onclick="insertEmoji('😂')">😂</span>
             <span class="emoji" onclick="insertEmoji('❤️')">❤️</span>
@@ -426,21 +377,89 @@ body.auth-page {
             <span class="emoji" onclick="insertEmoji('🤯')">🤯</span>
             <span class="emoji" onclick="insertEmoji('😏')">😏</span>
         </div>
-        </div>
+    </div>
 
+    <!-- 🔹 PWA: Кнопка установки -->
+    <div id="pwa-install">
+        <span>📱 Установить Secure Chat?</span>
+        <button id="pwa-install-btn">Установить</button>
+        <button id="pwa-dismiss-btn" style="background:transparent;color:white;margin-left:5px;">✕</button>
+    </div>
+
+    <!-- 🔹 СКРИПТЫ -->
     <script>
+        // === Загрузка файлов ===
+        document.getElementById('uploadForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) { alert('Пожалуйста, выберите файл.'); return; }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    alert('Файл успешно загружен!');
+                    console.log('Ответ сервера:', data);
+                    document.getElementById('uploadForm').reset();
+                })
+                .catch(err => {
+                    alert('Ошибка при загрузке файла.');
+                    console.error('Ошибка:', err);
+                });
+        });
+
+        // === История сообщений ===
+        async function loadMessages() {
+            const res = await fetch('/messages');
+            const msgs = await res.json();
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            container.innerHTML = '';
+            msgs.forEach(msg => {
+                const div = document.createElement('div');
+                if (msg.type === 'file') {
+                    const url = `/uploads/${msg.content}`;
+                    const ext = msg.content.split('.').pop().toLowerCase();
+                    if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+                        div.innerHTML = `<img src="${url}" style="max-width:200px;max-height:200px;">`;
+                    } else {
+                        div.innerHTML = `<a href="${url}" target="_blank">📎 ${msg.content}</a>`;
+                    }
+                } else {
+                    div.textContent = msg.content;
+                }
+                container.appendChild(div);
+            });
+        }
+
+        // === Чат: WebSocket и логика ===
         let ws = null;
         let token = localStorage.getItem('chat_token');
 
         function showAuth() {
             document.getElementById('auth').style.display = 'block';
             document.getElementById('chat').style.display = 'none';
+            updateBackground();
         }
-
-
         function showChat() {
             document.getElementById('auth').style.display = 'none';
             document.getElementById('chat').style.display = 'block';
+            updateBackground();
+        }
+
+        // === 🌈 Управление радужным фоном ===
+        function updateBackground() {
+            const auth = document.getElementById('auth');
+            const chat = document.getElementById('chat');
+            const body = document.body;
+            if (auth?.style.display === 'block' || (!chat || chat.style.display === 'none')) {
+                body.classList.add('auth-page');
+            } else {
+                body.classList.remove('auth-page');
+            }
         }
 
         async function register() {
@@ -452,11 +471,14 @@ body.auth-page {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({username: user, email, password: pass})
             });
+            const msgEl = document.getElementById('authMessage');
             if (res.ok) {
-                document.getElementById('authMessage').textContent = 'Registered! Login now.';
+                msgEl.textContent = 'Registered! Login now.';
+                msgEl.style.color = 'green';
             } else {
                 const err = await res.json();
-                document.getElementById('authMessage').textContent = err.detail || 'Registration failed';
+                msgEl.textContent = err.detail || 'Registration failed';
+                msgEl.style.color = 'red';
             }
         }
 
@@ -466,26 +488,26 @@ body.auth-page {
             const formData = new FormData();
             formData.append('username', user);
             formData.append('password', pass);
-
-            const res = await fetch('/login', {
-                method: 'POST',
-                body: formData
-            });
+            
+            const res = await fetch('/login', { method: 'POST', body: formData });
+            const msgEl = document.getElementById('authMessage');
             if (res.ok) {
                 const data = await res.json();
                 localStorage.setItem('chat_token', data.access_token);
                 token = data.access_token;
                 connectWebSocket();
                 showChat();
+                msgEl.textContent = '';
             } else {
-                document.getElementById('authMessage').textContent = 'Login failed';
+                msgEl.textContent = 'Login failed';
+                msgEl.style.color = 'red';
             }
         }
 
         function connectWebSocket() {
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
             ws = new WebSocket(`${protocol}://${location.host}/ws?token=${token}`);
-
+            
             ws.onmessage = (event) => {
                 const messages = document.getElementById('messages');
                 const p = document.createElement('p');
@@ -493,7 +515,6 @@ body.auth-page {
                 messages.appendChild(p);
                 messages.scrollTop = messages.scrollHeight;
             };
-
             ws.onclose = () => {
                 console.log('Disconnected');
                 showAuth();
@@ -503,109 +524,89 @@ body.auth-page {
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const msg = input.value.trim();
-            if (msg && ws && ws.readyState === WebSocket.OPEN) {
+            if (msg && ws?.readyState === WebSocket.OPEN) {
                 ws.send(msg);
                 input.value = '';
             }
         }
-            
+
         function toggleEmojiPanel() {
             const panel = document.getElementById('emojiPanel');
             panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-            }
-                
+        }
+
         function insertEmoji(emoji) {
             const input = document.getElementById('messageInput');
-            const start = input.selectionStart || input.value.length;
-            const end = input.selectionEnd || input.value.length;
-            const before = input.value.substring(0, start);
-            const after = input.value.substring(end);
-            input.value = before + emoji + after;
+            const start = input.selectionStart ?? input.value.length;
+            const end = input.selectionEnd ?? input.value.length;
+            input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
             input.focus();
             input.setSelectionRange(start + emoji.length, start + emoji.length);
-            }
-
-
+        }
 
         function logout() {
-            if (ws) ws.close();
+            ws?.close();
             localStorage.removeItem('chat_token');
             token = null;
             showAuth();
         }
 
-        // При загрузке
-        if (token) {
-            connectWebSocket();
-            showChat();
-        } else {
-            showAuth();
-        }
-
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        // Enter для отправки
+        document.getElementById('messageInput')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
-    </script>
-<!-- 🔹 PWA: Кнопка установки -->
-<div id="pwa-install">
-    <span>📱 Установить Secure Chat?</span>
-    <button id="pwa-install-btn">Установить</button>
-    <button id="pwa-dismiss-btn" style="background:transparent;color:white;margin-left:5px;">✕</button>
-</div>
 
-<!-- 🔹 PWA: Скрипт регистрации Service Worker -->
-<script>
-    // Регистрация Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/static/sw.js')
-                .then(reg => console.log('✅ SW registered:', reg.scope))
-                .catch(err => console.error('❌ SW error:', err));
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            if (token) { connectWebSocket(); showChat(); }
+            else { showAuth(); }
+            updateBackground();
         });
-    }
 
-    // Обработка установки PWA
-    let deferredPrompt;
-    const installBanner = document.getElementById('pwa-install');
-    const installBtn = document.getElementById('pwa-install-btn');
-    const dismissBtn = document.getElementById('pwa-dismiss-btn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBanner.classList.add('show');
-        console.log('📲 PWA install prompt available');
-    });
-
-    installBtn?.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`📲 User choice: ${outcome}`);
-            deferredPrompt = null;
-            installBanner.classList.remove('show');
+        // === 🔹 PWA: Service Worker и установка ===
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('✅ SW registered:', reg.scope))
+                    .catch(err => console.error('❌ SW error:', err));
+            });
         }
-    });
 
-    dismissBtn?.addEventListener('click', () => {
-        installBanner.classList.remove('show');
-    });
+        let deferredPrompt;
+        const installBanner = document.getElementById('pwa-install');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const dismissBtn = document.getElementById('pwa-dismiss-btn');
 
-    window.addEventListener('appinstalled', () => {
-        console.log('✅ PWA installed!');
-        installBanner.classList.remove('show');
-    });
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner?.classList.add('show');
+        });
 
-    // Запрос на уведомления после первого клика
-    document.addEventListener('click', async () => {
-        if ('Notification' in window && Notification.permission === 'default') {
-            await Notification.requestPermission();
-        }
-    }, { once: true });
-</script>
+        installBtn?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`📲 User choice: ${outcome}`);
+                deferredPrompt = null;
+                installBanner?.classList.remove('show');
+            }
+        });
+
+        dismissBtn?.addEventListener('click', () => {
+            installBanner?.classList.remove('show');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA installed!');
+            installBanner?.classList.remove('show');
+        });
+
+        document.addEventListener('click', async () => {
+            if ('Notification' in window && Notification.permission === 'default') {
+                await Notification.requestPermission();
+            }
+        }, { once: true });
+    </script>
 </body>
-
 </html>
-
-
-
