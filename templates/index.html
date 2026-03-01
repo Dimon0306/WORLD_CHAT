@@ -79,6 +79,11 @@
             background-size: 400% 400%;
             animation: calm-rainbow 20s ease infinite;
         }
+        @keyframes calm-rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         
         body.auth-page {
             background: linear-gradient(-45deg, 
@@ -595,6 +600,7 @@
     </script>
 </body>
 </html>
+
 
 
 
