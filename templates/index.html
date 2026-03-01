@@ -121,38 +121,41 @@
         }
 
         /* === ПОЛЕ ВВОДА СООБЩЕНИЯ === */
+        /* === ПОЛЕ ВВОДА — МИНИ === */
         #messageInput {
-            width: 85%;
-            padding: 16px 20px;
-            border: 2px solid #ddd;
-            border-radius: 30px;
-            margin-right: 10px;
-            font-size: 16px;
-            line-height: 1.4;
-            min-height: 50px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 65%;
+            padding: 8px 14px;
+            border: 1px solid #ccc;     /* Тоньше рамка */
+            border-radius: 20px;
+            margin-right: 8px;
+            font-size: 13px;
+            line-height: 1.2;
+            min-height: 36px;
+            transition: border-color 0.2s;
         }
         #messageInput:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
         }
 
         /* === КНОПКИ В ЧАТЕ === */
         #chat button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            margin: 5px 3px;
-            transition: transform 0.2s, box-shadow 0.2s;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;        /* Было 12px 24px → меньше */
+        border-radius: 20px;      /* Было 25px → компактнее */
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;          /* Мельче текст */
+        margin: 5px 3px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        min-height: 36px;         /* Соответствует полю ввода */
         }
         #chat button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);  /* Меньше анимация */
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
         }
 
         /* === ФОРМА АВТОРИЗАЦИИ === */
@@ -305,17 +308,6 @@
         <span>C</span><span>h</span><span>a</span><span>t</span>
         <span>R</span><span>o</span><span>o</span><span>m</span>
     </h1>
-
-    <!-- Загрузка файлов -->
-    <div class="file-upload-section">
-        <form id="uploadForm" enctype="multipart/form-data">
-            <label for="fileInput">📎 Прикрепить файл или фото:</label><br><br>
-            <input type="file" id="fileInput" name="file" 
-                   accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.csv" required>
-            <br><br>
-            <button type="submit">📤 Отправить</button>
-        </form>
-    </div>
 
     <!-- Сообщения (отдельный блок для истории) -->
     <div id="chatMessages" style="display:none;"></div>
@@ -610,3 +602,4 @@
     </script>
 </body>
 </html>
+
