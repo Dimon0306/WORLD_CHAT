@@ -1,4 +1,3 @@
-# app/main.py
 import asyncpg
 from fastapi import FastAPI, WebSocket, Request, Depends, HTTPException, status, File, UploadFile, Query
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -22,24 +21,12 @@ models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
-    
+
+templates = Jinja2Templates(directory="templates")
 BASE_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = BASE_DIR.parent if BASE_DIR.name == "app" else BASE_DIR
-templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
-STATIC_DIR = None
-for possible_path in [
-    BASE_DIR / "static",           # app/static/ (Railway)
-    PROJECT_ROOT / "static",       # project/static/
-    PROJECT_ROOT / "app" / "static", # project/app/static/ (Render)
-]:
-    if possible_path.exists():
-        STATIC_DIR = possible_path
-        break
+STATIC_DIR = BASE_DIR / "static"
 
-if not STATIC_DIR:
-    STATIC_DIR = BASE_DIR / "static"  # Fallback
-
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Хранилище активных соединений: {websocket: user}
@@ -63,7 +50,7 @@ def get_messages():
 def check_username(username: str = Query(...), db: Session = Depends(get_db)):
     exists = db.query(User).filter(User.username == username).first() is not None
     return {"available": not exists}
-    
+
 # база
 @app.on_event("startup")
 async def startup():
@@ -89,7 +76,7 @@ async def upload_file(file: UploadFile = File(...)):
         f.write(content)
 
     return {"filename": safe_filename}
- 
+
 
 @app.post("/register", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -151,44 +138,19 @@ async def websocket_endpoint(websocket: WebSocket):
 
     await websocket.accept()
     active_connections.append({"websocket": websocket, "user": user})
-    logger.info(f"✅ Подключился: {user.username}")
 
     try:
         while True:
             data = await websocket.receive_text()
-            message_text = f"{user.username}: {data}"
-            
-            # 🔥 Сохраняем в общий список
-            messages.append({
-                "user": user.username,
-                "content": data,
-                "type": "text",
-                "timestamp": None
-            })
-            
-            # Рассылаем всем
+            message = f"{user.username}: {data}"
             disconnected = []
             for conn in active_connections:
                 try:
-                    await conn["websocket"].send_text(message_text)
-                except Exception as e:
-                    logger.error(f"❌ Ошибка отправки {conn['user'].username}: {e}")
+                    await conn["websocket"].send_text(message)
+                except:
                     disconnected.append(conn)
-            
             for conn in disconnected:
-                if conn in active_connections:
-                    active_connections.remove(conn)
-                    
-    except Exception as e:
-        logger.info(f"🔌 {user.username} отключился: {e}")
-    finally:
+                active_connections.remove(conn)
+    except:
+
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
-
-
-
-
-
-
-
-
-
