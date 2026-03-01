@@ -67,6 +67,191 @@
 </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
+
+        /* === 🌈 РАДУЖНЫЙ ФОН ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (AUTH) === */
+body {
+    /* Нейтральный фон по умолчанию для чата */
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    transition: background 0.5s ease;
+}
+
+/* Радужный фон только когда показана авторизация */
+body.auth-page {
+    background: linear-gradient(-45deg, 
+        #ff0000, #ff8000, #ffff00, #80ff00, 
+        #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff, #ff0080);
+    background-size: 400% 400%;
+    animation: rainbow-bg 15s ease infinite;
+}
+
+@keyframes rainbow-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* === ⚪ НЕЙТРАЛЬНЫЙ ФОН ДЛЯ ЧАТА === */
+#chat {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+#messages {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+/* Стиль для сообщений */
+#messages p {
+    background: #ffffff;
+    padding: 10px 15px;
+    border-radius: 12px;
+    margin: 8px 0;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    word-wrap: break-word;
+}
+
+/* Поле ввода сообщения */
+#messageInput {
+    width: 70%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    margin-right: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+#messageInput:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Кнопки в чате */
+#chat button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#chat button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* === 🎨 СТИЛИ ДЛЯ ФОРМЫ АВТОРИЗАЦИИ === */
+#auth {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    margin: 40px auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#auth input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+#auth input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#auth button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+#auth button:hover {
+    transform: translateY(-2px);
+}
+
+/* Заголовки форм */
+#auth h2, #auth h3 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* === 📱 АДАПТИВНОСТЬ === */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    #chat, #auth {
+        padding: 15px;
+        border-radius: 12px;
+    }
+    #messageInput {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #chat button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* === 🎨 ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ === */
+/* Плавная прокрутка сообщений */
+#messages {
+    scroll-behavior: smooth;
+}
+
+/* Эффект при появлении нового сообщения */
+#messages p {
+    animation: message-slide 0.3s ease;
+}
+@keyframes message-slide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Индикатор набора сообщения (опционально) */
+.typing-indicator {
+    color: #888;
+    font-style: italic;
+    padding: 10px;
+    font-size: 12px;
+}
         body { font-family: Arial; max-width: 1000px; margin: 0 auto; padding: 60px; }
         #auth, #chat { display: none; }
         .form-group { margin: 10px 0; }
@@ -439,4 +624,5 @@
 </body>
 
 </html>
+
 
