@@ -73,6 +73,13 @@
             min-height: 100vh;
             transition: background 0.5s ease;
         }
+        body.chat-page {
+            background: linear-gradient(-45deg, 
+                #e3f2fd, #f3e5f5, #fff3e0, #e8f5e9);
+            background-size: 400% 400%;
+            animation: calm-rainbow 20s ease infinite;
+        }
+        
         body.auth-page {
             background: linear-gradient(-45deg, 
                 #ff0000, #ff8000, #ffff00, #80ff00, 
@@ -89,30 +96,12 @@
         /* === ⚪ НЕЙТРАЛЬНЫЙ ФОН ДЛЯ ЧАТА === */
         #auth, #chat { display: none; }
         #chat {
-            /* Мягкий градиент из пастельных тонов */
-            background: linear-gradient(-45deg, 
-                #e3f2fd, /* Нежно-голубой */
-                #f3e5f5, /* Лавандовый */
-                #fff3e0, /* Персиковый */
-                #e8f5e9  /* Мятный */
-            );
-            background-size: 400% 400%;
-            animation: calm-rainbow 20s ease infinite; /* Медленная анимация */
-            
+            background: #ffffff;  /* Чисто белый фон */
             border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.6); /* Полупрозрачная рамка */
-            backdrop-filter: blur(10px); /* Эффект матового стекла */
-            -webkit-backdrop-filter: blur(10px);
-            }
-            
-            /* Анимация плавного переливания */
-            @keyframes calm-rainbow {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);  /* Тень для контраста */
+            border: 1px solid #e0e0e0;
+        }
         #messages {
             background: #fafafa;
             border: 1px solid #ddd;
@@ -594,6 +583,7 @@
     </script>
 </body>
 </html>
+
 
 
 
