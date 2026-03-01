@@ -84,7 +84,7 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
+
         body.auth-page {
             background: linear-gradient(-45deg, 
                 #ff0000, #ff8000, #ffff00, #80ff00, 
@@ -223,7 +223,6 @@
             text-align: center;
             margin-bottom: 30px;
         }
-
         .chat-title span {
             display: inline-block;
             background: linear-gradient(45deg, 
@@ -297,8 +296,7 @@
     </h1>
 
     <!-- Сообщения (отдельный блок для истории) -->
-   <div id="chatMessages" style="display:none;"></div>  
-
+    <div id="chatMessages" style="display:none;"></div>
 
     <!-- Авторизация -->
     <div id="auth">
@@ -330,7 +328,7 @@
         <button onclick="sendMessage()">Send</button>
         <button onclick="logout()">Logout</button>
         <button onclick="toggleEmojiPanel()" style="font-size: 18px;">🙂</button>
-        
+
         <div id="emojiPanel">
             <span class="emoji" onclick="insertEmoji('😊')">😊</span>
             <span class="emoji" onclick="insertEmoji('😂')">😂</span>
@@ -374,10 +372,10 @@
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
             if (!file) { alert('Пожалуйста, выберите файл.'); return; }
-            
+
             const formData = new FormData();
             formData.append('file', file);
-            
+
             fetch('/upload', { method: 'POST', body: formData })
                 .then(r => r.json())
                 .then(data => {
@@ -435,7 +433,7 @@
             const auth = document.getElementById('auth');
             const chat = document.getElementById('chat');
             const body = document.body;
-            
+
             // Проверяем, что именно сейчас видно на экране
             if (auth?.style.display === 'block') {
                 // 1. Если видна форма входа -> ЯРКИЙ фон
@@ -480,7 +478,7 @@
             const formData = new FormData();
             formData.append('username', user);
             formData.append('password', pass);
-            
+
             const res = await fetch('/login', { method: 'POST', body: formData });
             const msgEl = document.getElementById('authMessage');
             if (res.ok) {
@@ -496,36 +494,21 @@
             }
         }
 
-        function getWebSocketProtocol() {
-            // 1. Проверка window.location
-            if (window.location.protocol === 'https:') {
-                return 'wss';
-            }
-            
-            // 2. Проверка заголовков от прокси (Railway/Render)
-            // Иногда протокол определяется через заголовки
-            const meta = document.querySelector('meta[name="x-forwarded-proto"]');
-            if (meta && meta.content === 'https') {
-                return 'wss';
-            }
-            
-            // 3. Fallback
-            return 'ws';
-        }
-
         function connectWebSocket() {
-            const protocol = getWebSocketProtocol();
-            const host = window.location.host;
-            const token = localStorage.getItem('chat_token');
-            
-            console.log(`🔌 WS Connect: ${protocol}://${host}/ws`);
-            console.log(`🔑 Token: ${token ? token.substring(0, 20) + '...' : 'NONE'}`);
-            
-            ws = new WebSocket(`${protocol}://${host}/ws?token=${token}`);
-            
-            ws.onopen = () => console.log('✅ WebSocket connected');
-            ws.onerror = (err) => console.error('❌ WebSocket error:', err);
-            ws.onclose = () => console.log('🔌 WebSocket closed');
+            const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+            ws = new WebSocket(`${protocol}://${location.host}/ws?token=${token}`);
+
+            ws.onmessage = (event) => {
+                const messages = document.getElementById('messages');
+                const p = document.createElement('p');
+                p.textContent = event.data;
+                messages.appendChild(p);
+                messages.scrollTop = messages.scrollHeight;
+            };
+            ws.onclose = () => {
+                console.log('Disconnected');
+                showAuth();
+            };
         }
 
         function sendMessage() {
@@ -617,13 +600,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
