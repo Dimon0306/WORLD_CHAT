@@ -23,7 +23,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
     
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 STATIC_DIR = None
@@ -167,6 +167,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except:
 
         active_connections[:] = [c for c in active_connections if c["websocket"] != websocket]
+
 
 
 
