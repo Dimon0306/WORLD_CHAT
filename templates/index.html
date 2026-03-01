@@ -428,10 +428,22 @@
             const auth = document.getElementById('auth');
             const chat = document.getElementById('chat');
             const body = document.body;
-            if (auth?.style.display === 'block' || (!chat || chat.style.display === 'none')) {
+            
+            // Проверяем, что именно сейчас видно на экране
+            if (auth?.style.display === 'block') {
+                // 1. Если видна форма входа -> ЯРКИЙ фон
                 body.classList.add('auth-page');
+                body.classList.remove('chat-page'); // Убираем пастельный
+                console.log('Фон: Авторизация (Яркий)');
+            } else if (chat?.style.display === 'block') {
+                // 2. Если виден чат -> ПАСТЕЛЬНЫЙ фон
+                body.classList.remove('auth-page'); // Убираем яркий
+                body.classList.add('chat-page');    // ✅ ДОБАВЛЯЕМ пастельный!
+                console.log('Фон: Чат (Пастельный)');
             } else {
+                // 3. По умолчанию (серый)
                 body.classList.remove('auth-page');
+                body.classList.remove('chat-page');
             }
         }
 
@@ -583,6 +595,7 @@
     </script>
 </body>
 </html>
+
 
 
 
