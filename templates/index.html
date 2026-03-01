@@ -494,21 +494,36 @@
             }
         }
 
-        function connectWebSocket() {
-            const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            ws = new WebSocket(`${protocol}://${location.host}/ws?token=${token}`);
+        function getWebSocketProtocol() {
+            // 1. Проверка window.location
+            if (window.location.protocol === 'https:') {
+                return 'wss';
+            }
             
-            ws.onmessage = (event) => {
-                const messages = document.getElementById('messages');
-                const p = document.createElement('p');
-                p.textContent = event.data;
-                messages.appendChild(p);
-                messages.scrollTop = messages.scrollHeight;
-            };
-            ws.onclose = () => {
-                console.log('Disconnected');
-                showAuth();
-            };
+            // 2. Проверка заголовков от прокси (Railway/Render)
+            // Иногда протокол определяется через заголовки
+            const meta = document.querySelector('meta[name="x-forwarded-proto"]');
+            if (meta && meta.content === 'https') {
+                return 'wss';
+            }
+            
+            // 3. Fallback
+            return 'ws';
+        }
+
+        function connectWebSocket() {
+            const protocol = getWebSocketProtocol();
+            const host = window.location.host;
+            const token = localStorage.getItem('chat_token');
+            
+            console.log(`🔌 WS Connect: ${protocol}://${host}/ws`);
+            console.log(`🔑 Token: ${token ? token.substring(0, 20) + '...' : 'NONE'}`);
+            
+            ws = new WebSocket(`${protocol}://${host}/ws?token=${token}`);
+            
+            ws.onopen = () => console.log('✅ WebSocket connected');
+            ws.onerror = (err) => console.error('❌ WebSocket error:', err);
+            ws.onclose = () => console.log('🔌 WebSocket closed');
         }
 
         function sendMessage() {
@@ -600,6 +615,7 @@
     </script>
 </body>
 </html>
+
 
 
 
